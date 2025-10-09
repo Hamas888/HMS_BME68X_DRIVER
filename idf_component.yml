@@ -1,0 +1,3 @@
+version: 1.0.0
+description: "A BME68X Driver Library for ESP-IDF"
+url: "https://github.com/Hamas888/HMS_BME68X_DRIVER"
