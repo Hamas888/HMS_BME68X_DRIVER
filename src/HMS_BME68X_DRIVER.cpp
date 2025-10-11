@@ -32,6 +32,9 @@ float HMS_BME68X::getGasScore() {
 	if (gasScore < 0)
 		gasScore = 0; // Sometimes gas readings can go outside of expected scale minimum
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.debug("Gas Resistance: %.2f Ohms, Gas Score: %.2f %%", sensorData->gas_resistance, gasScore);
+    #endif
 	return gasScore;
 }
 
@@ -44,6 +47,9 @@ float HMS_BME68X::getAirQuality() {
 	if ((getGasReferenceCount++) % 5 == 0)                  // If 5 measurements passed, recalculate the gas reference.
 		getGasReference();
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.debug("Air Quality Score: %.2f %%", airQualityScore);
+    #endif
 	return airQualityScore;
 }
 
@@ -55,6 +61,9 @@ float HMS_BME68X::getGasReference() {
 	}
 	gasReference = gasReference / readings;
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.debug("Gas Reference: %.2f Ohms", gasReference);
+    #endif
     return gasReference;
 }
 
@@ -75,6 +84,10 @@ float HMS_BME68X::getHumidityScore() {
 		}
 	}
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.debug("Humidity: %.2f %%rH, Humidity Score: %.2f %%", sensorData->humidity, humidityScore);
+    #endif
+
 	return humidityScore;
 }
 
@@ -93,6 +106,15 @@ void HMS_BME68X::read(struct bme68x_data *data) {
 	bme68x_get_data(BME68X_FORCED_MODE, data, &fields, &bme68XDev);
 
     sensorData = *data;
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.debug(
+            "T: %.2f C, P: %.2f hPa, H: %.2f %%rH, G: %.2f Ohms",
+            sensorData.temperature,
+            sensorData.pressure / 100.0,
+            sensorData.humidity,
+            sensorData.gas_resistance
+        );
+    #endif
 }
 
 #if defined(HMS_BME68X_PLATFORM_ARDUINO)
@@ -149,6 +171,10 @@ BME68X_INTF_RET_TYPE bme68x_i2c_read(
 		I2C_MEMADD_SIZE_8BIT, reg_data, len, 15) == HAL_OK
     ) return 0;
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.error("I2C Read Error at reg 0x%02X", reg_addr);
+    #endif
+
 	return 1;
 }
 
@@ -162,6 +188,9 @@ BME68X_INTF_RET_TYPE bme68x_i2c_write(
         I2C_MEMADD_SIZE_8BIT, (uint8_t*) reg_data, len, 100) == HAL_OK
     ) return 0;
 
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.error("I2C Write Error at reg 0x%02X", reg_addr);
+    #endif
     return 1;
 }
 #endif
@@ -210,6 +239,9 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::init() {
     }
 
     initialized = true;
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.info("BME68X sensor initialized successfully");
+    #endif
     return HMS_BME68X_OK;
 }
 
