@@ -56,18 +56,18 @@
 #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
     #include <stdio.h>
     #include <stdint.h>
+    #include "bme68x.h"
+    #include "bme68x_defs.h"
     #include <zephyr/device.h>
     #include <zephyr/drivers/i2c.h>
 #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
     #include "main.h"
     #include <stdio.h>
     #include <stdint.h>
-    #include "cmath"
-    #include "math.h"
-    #include "float.h"
-    #include <algorithm>
+    #include "bme68x.h"
+    #include "bme68x_defs.h"
     #if defined(osCMSIS) || defined(FREERTOS)
-        #define HMS_SOIL_SENSOR_STM32_FREERTOS
+        #define HMS_BME68X_STM32_FREERTOS
     #endif
 #endif
 
@@ -91,6 +91,15 @@ class HMS_BME68X {
         HMS_BME68X();
         ~HMS_BME68X();
 
+
+        float getGasScore();
+        float getAirQuality();
+        float getGasReference();
+        float getHumidityScore();
+        void read(struct bme68x_data *data);
+
+        struct bme68x_data *getSensorData() { return &sensorData; }
+        
     #if defined(HMS_BME68X_PLATFORM_ARDUINO)
         HMS_BME68X_StatusTypeDef begin(
             TwoWire *theWire = &Wire, uint8_t addr = HMS_BME68X_DEVICE_ADDR
@@ -110,18 +119,41 @@ class HMS_BME68X {
     #endif
 
     private:
-    bool      initialized   = false;
+        bool                       initialized                  = false;
+        float                      gasScore;
+        float                      humidityScore;
+        float                      airQualityScore;
+        float                      gasReference;
+        uint8_t                    fields;
+        uint8_t                    getGasReferenceCount         = 0;
+        uint8_t                    deviceAddress                = HMS_BME68X_DEVICE_ADDR;
+        struct bme68x_dev          bme68XDev;
+        struct bme68x_data         sensorData;
+        struct bme68x_conf         sensorConf;
+        struct bme68x_heatr_conf   heaterConf;
 
-    #if defined(HMS_BME68X_PLATFORM_ARDUINO)
-        TwoWire *bme68x_wire = NULL;
-    #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
-        i2c_port_t bme68x_i2c_port;
-    #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
-        struct device *bme68x_i2c_dev;
-    #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
-        I2C_HandleTypeDef *bme68x_hi2c;
-    #endif
+        #if defined(HMS_BME68X_PLATFORM_ARDUINO)
+            TwoWire *bme68x_wire = NULL;
+        #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
+            i2c_port_t bme68x_i2c_port;
+        #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
+            struct device *bme68x_i2c_dev;
+        #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
+            I2C_HandleTypeDef *bme68x_hi2c;
+        #endif
 
+                
+        HMS_BME68X_StatusTypeDef init();
+        void bme68xDelayUS(uint32_t period, void *intf_ptr);
+        int8_t bme68x_interface_init(struct bme68x_dev *bme, uint8_t intf);
+
+        static BME68X_INTF_RET_TYPE bme68x_i2c_read(
+            uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr
+        );
+
+        static BME68X_INTF_RET_TYPE bme68x_i2c_write(
+            uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr 
+        );
 };
 
 

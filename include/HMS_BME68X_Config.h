@@ -50,5 +50,15 @@
 #define HMS_BME68X_DEVICE_NAME             "BME68X"                       // Device Name
 #define HMS_BME68X_DEVICE_ADDR             0x76                           // BME68X default I2C address
 
+#define HMS_BME68X_GAS_REFERENCE           250000.0f                      // Reference gas resistance in Ohms
+#define HMS_BME68X_GAS_LOWER_LIMIT         5000.0f                        // Bad air quality limit
+#define HMS_BME68X_GAS_UPPER_LIMIT         50000.0f                       // Good air quality limit
+#define HMS_BME68X_HUMIDITY_REFERENCE      40.0f                          // Reference humidity in %
+#define HMS_BME68X_GETGASREFERENCE_COUNT   0                              // Count for gas reference measurements
+
+#define HMS_BME68X_AMBIENT_TEMP_DEFAULT    30                             // Default ambient temperature in Celsius for gas sensor heating profile
+#define HMS_BME68X_HEATER_DUR_DEFAULT      150                            // Default heater duration in milliseconds
+#define HMS_BME68X_HEATER_TEMP_DEFAULT     320                            // Default heater temperature in Celsius
+
 
 #endif // HMS_BME68X_CONFIG_H
