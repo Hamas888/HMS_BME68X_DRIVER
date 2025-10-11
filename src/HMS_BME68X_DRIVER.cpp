@@ -2,7 +2,7 @@
 
 #if defined(HMS_BME68X_LOGGER_ENABLED)
   #include "ChronoLog.h"
-  ChronoLogger bmeLogger("HMS_MPU6050", CHRONOLOG_LEVEL_DEBUG);
+  ChronoLogger bmeLogger("HMS_BME68X", CHRONOLOG_LEVEL_DEBUG);
 #endif
 
 
@@ -33,7 +33,7 @@ float HMS_BME68X::getGasScore() {
 		gasScore = 0; // Sometimes gas readings can go outside of expected scale minimum
 
     #ifdef HMS_BME68X_LOGGER_ENABLED
-        bmeLogger.debug("Gas Resistance: %.2f Ohms, Gas Score: %.2f %%", sensorData->gas_resistance, gasScore);
+        bmeLogger.debug("Gas Resistance: %.2f Ohms, Gas Score: %.2f %%", sensorData.gas_resistance, gasScore);
     #endif
 	return gasScore;
 }
@@ -57,7 +57,7 @@ float HMS_BME68X::getGasReference() {
     int readings = 10;
 	for (int i = 1; i <= readings; i++) {                                                   // read gas for 10 x 0.150mS = 1.5secs
 		read(&sensorData);
-		gasReference += sensorData->gas_resistance;
+		gasReference += sensorData.gas_resistance;
 	}
 	gasReference = gasReference / readings;
 
@@ -68,24 +68,24 @@ float HMS_BME68X::getGasReference() {
 }
 
 float HMS_BME68X::getHumidityScore() {
-	if (sensorData->humidity >= 38 && sensorData->humidity <= 42)                           // Humidity +/-5% around optimum
+	if (sensorData.humidity >= 38 && sensorData.humidity <= 42)                           // Humidity +/-5% around optimum
 		humidityScore = 0.25 * 100;
 	else {                                                                                  // Humidity is sub-optimal
-		if (sensorData->humidity < 38)
+		if (sensorData.humidity < 38)
 			humidityScore = (
-                0.25 / HMS_BME68X_HUMIDITY_REFERENCE * sensorData->humidity * 100
+                0.25 / HMS_BME68X_HUMIDITY_REFERENCE * sensorData.humidity * 100
             );
 		else {
 			humidityScore = ((   
                     -0.25 / (100 - HMS_BME68X_HUMIDITY_REFERENCE)
-                    * sensorData->humidity
+                    * sensorData.humidity
                 ) + 0.416666
             ) * 100;
 		}
 	}
 
     #ifdef HMS_BME68X_LOGGER_ENABLED
-        bmeLogger.debug("Humidity: %.2f %%rH, Humidity Score: %.2f %%", sensorData->humidity, humidityScore);
+        bmeLogger.debug("Humidity: %.2f %%rH, Humidity Score: %.2f %%", sensorData.humidity, humidityScore);
     #endif
 
 	return humidityScore;
@@ -136,7 +136,7 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::begin(const struct device *i2c_dev, uint8_t
 HMS_BME68X_StatusTypeDef HMS_BME68X::begin(I2C_HandleTypeDef *hi2c, uint8_t addr) {
     if (hi2c == NULL) {
         #ifdef HMS_BME68X_LOGGER_ENABLED
-            mpuLogger.error("I2C handle is NULL");
+            bmeLogger.error("I2C handle is NULL");
         #endif
         return HMS_BME68X_ERROR;
     }
@@ -231,7 +231,7 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::init() {
 	heaterConf.heatr_temp   = HMS_BME68X_HEATER_TEMP_DEFAULT;
 	heaterConf.heatr_dur    = HMS_BME68X_HEATER_DUR_DEFAULT;
 
-    if(bme68x_set_heatr_conf(&heaterConf, &bme68XDev)  != BME68X_OK) {
+    if(bme68x_set_heatr_conf(BME68X_FORCED_MODE, &heaterConf, &bme68XDev)  != BME68X_OK) {
         #ifdef HMS_BME68X_LOGGER_ENABLED
             bmeLogger.error("Failed to set heater configuration");
         #endif
@@ -246,13 +246,13 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::init() {
 }
 
 void HMS_BME68X::bme68xDelayUS(uint32_t period, void *intf_ptr) {
-    #if defined(HMS_MPU6050_PLATFORM_ARDUINO)
+    #if defined(HMS_BME68X_PLATFORM_ARDUINO)
         delay(period / 1000);
-    #elif defined(HMS_MPU6050_PLATFORM_ESP_IDF)
+    #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
         vTaskDelay((period / portTICK_PERIOD_MS) / 1000);
-    #elif defined(HMS_MPU6050_PLATFORM_ZEPHYR)
+    #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
         k_msleep(period / 1000);
-    #elif defined(HMS_MPU6050_PLATFORM_STM32_HAL)
+    #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
         HAL_Delay(period / 1000);
     #endif
 }

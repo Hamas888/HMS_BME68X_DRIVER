@@ -139,21 +139,15 @@ class HMS_BME68X {
         #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
             struct device *bme68x_i2c_dev;
         #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
-            I2C_HandleTypeDef *bme68x_hi2c;
+            static I2C_HandleTypeDef *bme68x_hi2c;
         #endif
 
                 
         HMS_BME68X_StatusTypeDef init();
-        void bme68xDelayUS(uint32_t period, void *intf_ptr);
-        int8_t bme68x_interface_init(struct bme68x_dev *bme, uint8_t intf);
 
-        static BME68X_INTF_RET_TYPE bme68x_i2c_read(
-            uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr
-        );
-
-        static BME68X_INTF_RET_TYPE bme68x_i2c_write(
-            uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr 
-        );
+        static void bme68xDelayUS(uint32_t period, void *intf_ptr);
+        static BME68X_INTF_RET_TYPE bme68x_i2c_read( uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr);
+        static BME68X_INTF_RET_TYPE bme68x_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr);
 };
 
 
