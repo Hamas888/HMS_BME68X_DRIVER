@@ -242,6 +242,7 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::init() {
 }
 
 void HMS_BME68X::bme68xDelayUS(uint32_t period, void *intf_ptr) {
+    (void)intf_ptr;  // Suppress unused parameter warning
     #if defined(HMS_BME68X_PLATFORM_ARDUINO)
         delay(period / 1000);
     #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
