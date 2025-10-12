@@ -157,7 +157,7 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::begin(I2C_HandleTypeDef *hi2c, uint8_t addr
     return HMS_BME68X_OK;
 }
 
-BME68X_INTF_RET_TYPE bme68x_i2c_read(
+BME68X_INTF_RET_TYPE HMS_BME68X::readRegister(
     uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr
 ) {
 	uint8_t devAddr = *(uint8_t*) intf_ptr;
@@ -174,7 +174,7 @@ BME68X_INTF_RET_TYPE bme68x_i2c_read(
 	return 1;
 }
 
-BME68X_INTF_RET_TYPE bme68x_i2c_write(
+BME68X_INTF_RET_TYPE HMS_BME68X::writeRegister(
     uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr 
 ) {
     uint8_t devAddr = *(uint8_t*) intf_ptr;
@@ -196,8 +196,8 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::init() {
         return HMS_BME68X_OK;                                           // Already initialized
     }
 
-    bme68XDev.read      = bme68x_i2c_read;
-    bme68XDev.write     = bme68x_i2c_write;
+    bme68XDev.read      = readRegister;
+    bme68XDev.write     = writeRegister;
     bme68XDev.intf      = BME68X_I2C_INTF;
     bme68XDev.delay_us  = bme68xDelayUS;
     bme68XDev.intf_ptr  = &deviceAddress;                                // Pass device address as interface pointer

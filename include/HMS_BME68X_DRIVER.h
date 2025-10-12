@@ -133,11 +133,11 @@ class HMS_BME68X {
         struct bme68x_heatr_conf   heaterConf;
 
         #if defined(HMS_BME68X_PLATFORM_ARDUINO)
-            TwoWire *bme68x_wire = NULL;
+            static TwoWire *bme68x_wire = NULL;
         #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
-            i2c_port_t bme68x_i2c_port;
+            static  i2c_port_t bme68x_i2c_port;
         #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
-            struct device *bme68x_i2c_dev;
+            static struct device *bme68x_i2c_dev;
         #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
             static I2C_HandleTypeDef *bme68x_hi2c;
         #endif
@@ -146,8 +146,8 @@ class HMS_BME68X {
         HMS_BME68X_StatusTypeDef init();
 
         static void bme68xDelayUS(uint32_t period, void *intf_ptr);
-        static BME68X_INTF_RET_TYPE bme68x_i2c_read( uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr);
-        static BME68X_INTF_RET_TYPE bme68x_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr);
+        static BME68X_INTF_RET_TYPE readRegister( uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr);
+        static BME68X_INTF_RET_TYPE writeRegister(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr);
 };
 
 
