@@ -5,7 +5,15 @@
   ChronoLogger bmeLogger("HMS_BME68X", CHRONOLOG_LEVEL_DEBUG);
 #endif
 
-
+#if defined(HMS_BME68X_PLATFORM_ARDUINO)
+    TwoWire *HMS_BME68X::bme68x_wire = NULL;
+#elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
+    i2c_port_t HMS_BME68X::bme68x_i2c_port;
+#elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
+    struct device *HMS_BME68X::bme68x_i2c_dev;
+#elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
+    I2C_HandleTypeDef *HMS_BME68X::bme68x_hi2c = NULL;
+#endif
 
 HMS_BME68X::HMS_BME68X() {
     // Constructor
