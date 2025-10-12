@@ -13,10 +13,6 @@ HMS_BME68X::HMS_BME68X() {
 
 HMS_BME68X::~HMS_BME68X() {
     // Destructor
-    if (sensorData != nullptr) {
-        delete[] sensorData;
-        sensorData = nullptr;
-    }
 }   
 
 float HMS_BME68X::getGasScore() {
