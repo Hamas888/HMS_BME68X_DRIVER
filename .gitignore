@@ -1,5 +1,4 @@
 .vscode/
 CMakeFiles/
-CMakeFiles/CMakeConfigureLog.yaml
 CMakeCache.txt
-.vscode/
+CMakeFiles/CMakeConfigureLog.yaml
