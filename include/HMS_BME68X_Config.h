@@ -44,11 +44,13 @@
   │ Requires: ChronoLog library → https://github.com/Hamas888/ChronoLog │
   └─────────────────────────────────────────────────────────────────────┘
 */
-#define HMS_BME68X_DEBUG_ENABLED           0                               // Enable debug messages (1=enabled, 0=disabled)
+#define HMS_BME68X_DEBUG_ENABLED           0                              // Enable debug messages (1=enabled, 0=disabled)
 
 
 #define HMS_BME68X_DEVICE_NAME             "BME68X"                       // Device Name
-#define HMS_BME68X_DEVICE_ADDR             0x76                           // BME68X default I2C address
+#define HMS_BME68X_DEVICE_ADDR1            0x76                           // BME68X default I2C address
+#define HMS_BME68X_DEVICE_ADDR2            0x77                           // BME68X alternative I2C address
+
 
 #define HMS_BME68X_GAS_REFERENCE           250000.0f                      // Reference gas resistance in Ohms
 #define HMS_BME68X_GAS_LOWER_LIMIT         5000.0f                        // Bad air quality limit

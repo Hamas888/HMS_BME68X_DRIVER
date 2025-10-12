@@ -102,7 +102,7 @@ class HMS_BME68X {
         
     #if defined(HMS_BME68X_PLATFORM_ARDUINO)
         HMS_BME68X_StatusTypeDef begin(
-            TwoWire *theWire = &Wire, uint8_t addr = HMS_BME68X_DEVICE_ADDR
+            TwoWire *theWire = &Wire, uint8_t addr = HMS_BME68X_DEVICE_ADDR2
         );
     #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
         HMS_BME68X_StatusTypeDef begin(
@@ -110,11 +110,11 @@ class HMS_BME68X {
         );
     #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
         HMS_BME68X_StatusTypeDef begin(
-            const struct device *i2c_dev = NULL, uint8_t addr = HMS_BME68X_DEVICE_ADDR
+            const struct device *i2c_dev = NULL, uint8_t addr = HMS_BME68X_DEVICE_ADDR2
         );
     #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
         HMS_BME68X_StatusTypeDef begin(
-            I2C_HandleTypeDef *hi2c = NULL, uint8_t addr = HMS_BME68X_DEVICE_ADDR
+            I2C_HandleTypeDef *hi2c = NULL, uint8_t addr = HMS_BME68X_DEVICE_ADDR2
         );
     #endif
 
@@ -126,7 +126,7 @@ class HMS_BME68X {
         float                      gasReference;
         uint8_t                    fields;
         uint8_t                    getGasReferenceCount         = 0;
-        uint8_t                    deviceAddress                = HMS_BME68X_DEVICE_ADDR;
+        uint8_t                    deviceAddress                = HMS_BME68X_DEVICE_ADDR2;
         struct bme68x_dev          bme68XDev;
         struct bme68x_data         sensorData;
         struct bme68x_conf         sensorConf;
