@@ -1,6 +1,6 @@
 # HMS_BME68X_DRIVER/CMakeLists.txt
 
-set(HMS_BME68X_DRIVER_VERSION 1.0.1)
+set(HMS_BME68X_DRIVER_VERSION 1.0.2)
 
 # Check if we're building with Zephyr
 if(DEFINED ZEPHYR_BASE)
@@ -10,7 +10,7 @@ if(DEFINED ZEPHYR_BASE)
     zephyr_library_sources(BME68x_SensorAPI/bme68x.c)
 
 # Check if we're building with ESP-IDF
-elseif(IDF_PROJECT)
+elseif(DEFINED ESP_PLATFORM OR DEFINED IDF_VER OR DEFINED ENV{IDF_PATH})
     idf_component_register(
         SRCS "src/HMS_BME68X_DRIVER.cpp"
         SRCS "BME68x_SensorAPI/bme68x.c"
