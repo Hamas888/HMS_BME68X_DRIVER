@@ -53,6 +53,12 @@
 #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
     #include <stdio.h>
     #include <stdint.h>
+    #include "bme68x.h"
+    #include <esp_err.h>
+    #include <driver/i2c.h>
+    #include "bme68x_defs.h"
+    #include <freertos/task.h>
+    #include <freertos/FreeRTOS.h>
 #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
     #include <stdio.h>
     #include <stdint.h>
@@ -106,7 +112,7 @@ class HMS_BME68X {
         );
     #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
         HMS_BME68X_StatusTypeDef begin(
-            i2c_port_t i2c_port = I2C_NUM_0, uint8_t addr = HMS_BME68X_DEVICE_ADDR
+            i2c_port_t i2c_port = I2C_NUM_0, uint8_t addr = HMS_BME68X_DEVICE_ADDR2
         );
     #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
         HMS_BME68X_StatusTypeDef begin(
@@ -135,7 +141,7 @@ class HMS_BME68X {
         #if defined(HMS_BME68X_PLATFORM_ARDUINO)
             static TwoWire *bme68x_wire = NULL;
         #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
-            static  i2c_port_t bme68x_i2c_port;
+            static i2c_port_t bme68x_i2c_port;
         #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
             static struct device *bme68x_i2c_dev;
         #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)

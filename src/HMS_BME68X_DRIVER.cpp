@@ -8,7 +8,7 @@
 #if defined(HMS_BME68X_PLATFORM_ARDUINO)
     TwoWire *HMS_BME68X::bme68x_wire = NULL;
 #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
-    i2c_port_t HMS_BME68X::bme68x_i2c_port;
+    i2c_port_t HMS_BME68X::bme68x_i2c_port = I2C_NUM_0;
 #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
     struct device *HMS_BME68X::bme68x_i2c_dev;
 #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)
@@ -128,8 +128,101 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::begin(TwoWire *theWire, uint8_t addr) {
 }
 #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
 HMS_BME68X_StatusTypeDef HMS_BME68X::begin(i2c_port_t i2c_port, uint8_t addr) {
-    // Placeholder implementation for ESP-IDF
-    return HMS_BME68X_OK;
+    if (i2c_port == I2C_NUM_MAX) {
+        #ifdef HMS_BME68X_LOGGER_ENABLED
+            bmeLogger.error("I2C port number is invalid");
+        #endif
+        return HMS_BME68X_ERROR;
+    }
+
+    bme68x_i2c_port = i2c_port;
+    deviceAddress = addr;
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (deviceAddress << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_stop(cmd);
+
+    esp_err_t result = i2c_master_cmd_begin(bme68x_i2c_port, cmd, pdMS_TO_TICKS(100));
+    i2c_cmd_link_delete(cmd);
+
+    if (result != ESP_OK) {
+        #ifdef HMS_BME68X_LOGGER_ENABLED
+            bmeLogger.error("Device not found at address 0x%02X", deviceAddress);
+        #endif
+        return HMS_BME68X_NOT_FOUND;
+    }
+
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.info("Device found at address 0x%02X", deviceAddress);
+    #endif
+
+    return init();
+}
+
+BME68X_INTF_RET_TYPE HMS_BME68X::readRegister(
+    uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr
+) {
+    uint8_t devAddr = *(uint8_t*) intf_ptr;
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    if (cmd == NULL) return 1;
+
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_write_byte(cmd, reg_addr, true);
+
+    i2c_master_start(cmd); // repeated start
+    i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_READ, true);
+
+    if (len > 1) {
+        i2c_master_read(cmd, reg_data, len - 1, I2C_MASTER_ACK);
+    }
+    i2c_master_read_byte(cmd, reg_data + len - 1, I2C_MASTER_NACK);
+
+    i2c_master_stop(cmd);
+
+    esp_err_t ret = i2c_master_cmd_begin(bme68x_i2c_port, cmd, pdMS_TO_TICKS(100));
+    i2c_cmd_link_delete(cmd);
+
+    if (ret == ESP_OK) return 0;
+
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.error("I2C Read Error at reg 0x%02X", reg_addr);
+    #endif
+
+    return 1;
+}
+
+BME68X_INTF_RET_TYPE HMS_BME68X::writeRegister(
+    uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr
+) {
+    uint8_t devAddr = *(uint8_t*) intf_ptr;
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    if (cmd == NULL) return 1;
+
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_write_byte(cmd, reg_addr, true);
+
+    if (len > 0) {
+        i2c_master_write(cmd, (uint8_t*)reg_data, len, true);
+    }
+
+    i2c_master_stop(cmd);
+
+    esp_err_t ret = i2c_master_cmd_begin(bme68x_i2c_port, cmd, pdMS_TO_TICKS(100));
+    i2c_cmd_link_delete(cmd);
+
+    if (ret == ESP_OK) return 0;
+
+    #ifdef HMS_BME68X_LOGGER_ENABLED
+        bmeLogger.error("I2C Write Error at reg 0x%02X", reg_addr);
+    #endif
+
+    return 1;
 }
 #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
 HMS_BME68X_StatusTypeDef HMS_BME68X::begin(const struct device *i2c_dev, uint8_t addr) {
@@ -162,7 +255,6 @@ HMS_BME68X_StatusTypeDef HMS_BME68X::begin(I2C_HandleTypeDef *hi2c, uint8_t addr
     #endif
 
     return init();
-    return HMS_BME68X_OK;
 }
 
 BME68X_INTF_RET_TYPE HMS_BME68X::readRegister(
@@ -254,7 +346,7 @@ void HMS_BME68X::bme68xDelayUS(uint32_t period, void *intf_ptr) {
     #if defined(HMS_BME68X_PLATFORM_ARDUINO)
         delay(period / 1000);
     #elif defined(HMS_BME68X_PLATFORM_ESP_IDF)
-        vTaskDelay((period / portTICK_PERIOD_MS) / 1000);
+        vTaskDelay(pdMS_TO_TICKS(period / 1000));
     #elif defined(HMS_BME68X_PLATFORM_ZEPHYR)
         k_msleep(period / 1000);
     #elif defined(HMS_BME68X_PLATFORM_STM32_HAL)

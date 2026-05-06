@@ -1,6 +1,6 @@
 # HMS_BME68X_DRIVER/CMakeLists.txt
 
-set(HMS_BME68X_DRIVER_VERSION 1.0.0)
+set(HMS_BME68X_DRIVER_VERSION 1.0.1)
 
 # Check if we're building with Zephyr
 if(DEFINED ZEPHYR_BASE)

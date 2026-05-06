@@ -1,6 +1,6 @@
 {
   "name": "HMS_BME68X_DRIVER",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This Package Provide BME68X Sensor Driver Library for Cross Platform (ARDUINO/STM/ESP/nRF)",
   "keywords": [
     "BME68X",
