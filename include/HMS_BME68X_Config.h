@@ -2,7 +2,7 @@
  ====================================================================================================
  * File:        HMS_BME68X_Config.h
  * Author:      Hamas Saeed
- * Version:     Rev_1.0.0
+ * Version:     Rev_1.0.1
  * Date:        Oct 9 2025
  * Brief:       This Package Provide BME68X Sensor Driver Configuration.
  * 
@@ -30,7 +30,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * For any inquiries, contact Hamas Saeed at hamasaeed@gmail.com
+ * For any inquiries, contact Hamas Saeed at hamasaeed888@gmail.com
  *
  ====================================================================================================
  */
