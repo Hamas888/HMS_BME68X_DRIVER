@@ -16,6 +16,7 @@ elseif(DEFINED ESP_PLATFORM OR DEFINED IDF_VER OR DEFINED ENV{IDF_PATH})
         SRCS "BME68x_SensorAPI/bme68x.c"
         INCLUDE_DIRS "include"
         INCLUDE_DIRS "BME68x_SensorAPI"
+        REQUIRES "driver"
     )
     
 # STM32 / generic CMake project
