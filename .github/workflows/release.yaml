@@ -39,7 +39,7 @@ jobs:
       - name: Create zip archive
         run: |
           ZIP_NAME="HMS_BME68X_DRIVER_v${{ steps.get_version.outputs.version }}.zip"
-          zip -r "$ZIP_NAME" src examples library.json README.md
+          zip -r "$ZIP_NAME" src include library.json library.properties README.md LICENSE BME68x_SensorAPI/
           echo "zip_name=$ZIP_NAME" >> $GITHUB_ENV
 
       # Step 5: Create or update GitHub release
