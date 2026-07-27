@@ -44,7 +44,7 @@
     #define HMS_BME68X_PLATFORM_ESP_IDF
 #elif defined(__ZEPHYR__)
     #define HMS_BME68X_PLATFORM_ZEPHYR
-#elif defined(__STM32__)
+#elif defined(__arm__) && (defined(USE_HAL_DRIVER) || defined(USE_FULL_LL_DRIVER))
     #define HMS_BME68X_PLATFORM_STM32_HAL
 #endif
 
